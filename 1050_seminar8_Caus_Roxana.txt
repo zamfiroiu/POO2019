@@ -1,0 +1,132 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+class avion {
+private:
+	const int cod;
+	char model[10];
+public:
+
+	int getCod() {
+		return cod;
+	}
+
+	avion() :cod(1) {
+		strcpy(this->model, "Boeing");
+	}
+	avion(int newCode, char model[]) :cod(newCode) {
+		if (strlen(model) < 10) {
+			strcpy(this->model, model);
+		}
+		else {
+			strcpy(this->model, "");
+		}
+	}
+	avion(const avion& a) :cod(a.cod) {
+		strcpy(this->model, a.model);
+	}
+	
+	avion& operator=(const avion& a) {
+		strcpy(this->model, a.model);
+		return *this;
+	}
+
+	char* getModel() {
+		return this->model;
+	}
+};
+
+ostream& operator<< (ostream& out, avion& a) {
+	out << "cod: ";
+	out << a.getCod();
+
+	out << "model ";
+	out << a.getModel();
+
+	return out;
+}
+
+class aeroport {
+private:
+	string denumire;
+	int nrAvioane;
+	avion* avioane;
+public:
+	aeroport() :nrAvioane(0), denumire(" ") {
+		avioane = NULL;
+	}
+	aeroport(avion* avioane,string denumire, int nrAvioane) {
+		this->denumire = denumire;
+		this->nrAvioane = nrAvioane;
+		this->avioane = new avion[nrAvioane];
+		for (int i = 0; i < nrAvioane; i++)
+			this->avioane[i] = avioane[i];
+	}
+
+	aeroport& operator=(const aeroport& a) {
+		this->denumire = a.denumire;
+		if (a.nrAvioane > 0 && a.avioane != NULL) {
+			this->nrAvioane = a.nrAvioane;
+			if (this->avioane != NULL) {
+				delete[]this->avioane;
+
+			}
+			this->avioane = new avion[a.nrAvioane];
+			for (int i = 0; i < nrAvioane; i++)
+				this->avioane[i] = a.avioane[i];
+			return *this;
+		}
+	}
+
+	aeroport(const aeroport&a) {
+		this->denumire = a.denumire;
+		if (a.nrAvioane > 0 && a.avioane != NULL) {
+			this->nrAvioane = a.nrAvioane;
+			this->avioane = new avion[a.nrAvioane];
+			for (int i = 0; i < nrAvioane; i++)
+				this->avioane[i] = a.avioane[i];
+		}
+
+		else {
+			this->nrAvioane = 0;
+			this->avioane = NULL;
+		}
+	}
+
+	int getNrTotalLocuri() {
+		//nr de locuri este reprezentat de codul avionului 
+		int s = 0;
+		for (int i = 0; i < this->nrAvioane; i++) {
+			s += this->avioane[i].getCod();
+		}
+		return s;
+	}
+
+	//operatorul CAST
+	explicit operator int() {
+		 return getNrTotalLocuri(); //sau this->getNrTotalLocuri
+	}
+
+	friend ostream& operator<< (ostream& out, aeroport a);
+};
+
+ostream& operator<< (ostream& out, aeroport a) {
+	out << "denumire: ";
+	out << a.denumire;
+
+	out << "numar delocuri: ";
+	out << a.nrAvioane;
+	for (int i = 0; i < a.nrAvioane; i++) {
+		out << a.avioane[i];
+	}
+	return out;
+}
+
+
+
+void main() {
+	aeroport aeroport;
+	int a = (int)aeroport; //returneaza nr total de locuri
+
+}
